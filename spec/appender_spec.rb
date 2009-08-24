@@ -94,6 +94,27 @@ describe "Appender" do
   end
 end
 
+describe Appender, "Log Rotate" do
+  
+  before do
+    @config_file = "/tmp/appender_spec.conf"
+    File.open(@config_file, 'w') {|f| f.write contents}
+  end
+
+  # Running this on its own to reduce the side effects of stubbing out log rotation.
+  it "should not break the original configuration file if it cannot be log rotated" do
+    LogRotate.stub!(:rotate_file).and_return(lambda{raise(StandardError, "Testing rotate_file")})
+    # def LogRotate.rotate_file(*args); raise(StandardError, ); end
+    lambda{Appender.process(:config_file => @config_file, :append => "New contents")}.should 
+      raise_error(StandardError, "Testing rotate_file")
+    File.read(@config_file).should eql(contents)
+  end
+  
+  after(:all) do
+    `rm -rf /tmp/appender_spec.conf*`
+  end
+end
+
 
 def read_contents
   File.read(@config_file)
