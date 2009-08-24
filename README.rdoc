@@ -16,8 +16,8 @@ When possible, a fully-owned configuration file makes more sense.  I.e., let Spr
 
 This appender approach can easily break if:
 
-  * You get your search and replace wrong
-  * The configuration file is context sensitive (which is often true)
+* You get your search and replace wrong
+* The configuration file is context sensitive (which is often true)
 
   
 ==Usage
@@ -37,13 +37,15 @@ From the command line:
 
 Another way to do this is simply with bash:
 
-  echo "key value" > j2; echo "other value" >> j2; cat j2 | grep -v other > j2.tmp; echo "new value" >> j2.tmp; mv j2.tmp j2
+  cat /etc/syslog-ng/syslog-ng.conf | grep -v "destination df_cron" > syslog-ng.conf.tmp
+  echo "destination df_cron { file(\"/var/log/cron.log\"); };" >> syslog-ng.conf.tmp
+  mv syslog-ng.conf.tmp /etc/syslog-ng/syslog-ng.conf
 
 The problem with this bash approach is:
 
-  * limited regular expression support
-  * less error control
-  * manual configuration history management
+* limited regular expression support
+* less error control
+* manual configuration history management
 
 Yet, I prefer the simpler bash approach when I can do it that way.
 
