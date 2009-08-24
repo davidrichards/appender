@@ -1,6 +1,16 @@
 ==appender
 
-Descripion goes here.
+This is a general tool for cleaning configuration files and appending text in them.  The need for something like this occurs when some process is changing a configuration file but isn't necessarily the only process that manages that file.  If manual changes are allowed, or other deployment scripts are touching the same file, we want to only remove our own lines and append them to the file.  
+
+To do this with a little extra safety, appender log rotates the configuration file with a time-stamped history.  This way, rollbacks can be managed manually.
+
+The workflow is very basic:
+
+* Rotate the configuration file, in case a mistake has been made
+* Remove lines that match a pattern
+* Append some new configuration at the end of the file
+
+This doesn't mean the file looks pretty when we're finished.  
 
 ==Usage
 

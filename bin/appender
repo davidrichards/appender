@@ -1,0 +1,61 @@
+#!/usr/bin/env ruby -KU
+
+require File.join(File.dirname(__FILE__), %w(.. lib appender))
+
+# Make sure OpenStruct has at least this bug fixed.
+class OpenStruct
+  def table; @table; end
+end
+
+# Gather the command-line arguments and pass them to Appender.process
+class ConfigOptparse
+  require 'ostruct'
+  require 'optparse'
+
+  #
+  # Return a structure describing the options.
+  #
+  def self.parse(args)
+    # The options specified on the command line will be collected in *options*.
+    # We set default values here.
+    options = OpenStruct.new
+    options.config_file =  ''
+    options.append =  ''
+    options.remove =  []
+
+    opts = OptionParser.new do |opts|
+      opts.banner = "Usage: appender [options]"
+
+      opts.separator ""
+      opts.separator "Specific options:"
+
+      opts.on("--file [path]", "Path to the config file") do |config|
+        options.config_file = config
+      end
+      
+      opts.on("--remove [expression]", Array, "Lines matching expression are removed from the config") do |config|
+        options.remove = config
+      end
+      
+      opts.on("--append [contents]", "New contents to add to the file") do |config|
+        options.append = config
+      end
+
+      # No argument, shows at tail.  This will print an options summary.
+      # Try it and see!
+      opts.on_tail("-h", "--help", "Show this message") do
+        puts opts
+        exit
+      end
+
+    end
+
+    opts.parse!(args)
+    options
+  end  # parse()
+
+end  # class OptparseExample
+
+options = ConfigOptparse.parse(ARGV)
+
+Appender.process(options.table)

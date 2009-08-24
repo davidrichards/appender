@@ -4,11 +4,12 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |s|
     s.name = "appender"
-    s.summary = %Q{TODO}
+    s.summary = %Q{Appends configuration to files}
     s.email = "drichards@showcase60.com"
     s.homepage = "http://github.com/davidrichards/appender"
-    s.description = "TODO"
+    s.description = "Appends configuration to files"
     s.authors = ["David Richards"]
+    s.add_dependency('logrotate')
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
