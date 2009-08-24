@@ -1,4 +1,4 @@
-==appender
+== Appender
 
 This is a general tool for cleaning configuration files and appending text in them.  The need for something like this occurs when some process is changing a configuration file but isn't necessarily the only process that manages that file.  If manual changes are allowed, or other deployment scripts are touching the same file, we want to only remove our own lines and append them to the file.  
 
@@ -12,12 +12,46 @@ The workflow is very basic:
 
 This doesn't mean the file looks pretty when we're finished.  
 
+When possible, a fully-owned configuration file makes more sense.  I.e., let Sprinkle, Puppet, Chef, whatever fully own a configuration file and make the changes in the configuration management tool, rather than appending the file.  This approach can easily break if:
+
+* You get your search and replace wrong
+* The configuration file is context sensitive (which is often true)
+
+Another way to do this is simply with bash:
+
+  echo "key value" > j2; echo "other value" >> j2; cat j2 | grep -v other > j2.tmp; echo "new value" >> j2.tmp; mv j2.tmp j2
+  
+The problem with this approach (sometimes) is:
+
+* limited regular expression support
+* less error control
+* manual config history managment
+
+Yet, I prefer the simpler bash approach except for really important config files that I have to touch.
+  
 ==Usage
+
+From Ruby:
+
+  new_content = %[
+  destination df_cron { file("/var/log/cron.log"); };
+  filter f_cron { facility(cron); };
+  ]
+  Appender.process(:config_file => '/etc/syslog-ng/syslog-ng.conf', :append => new_content, :remove => 'f_cron')
+
+From the command line:
+
+  appender --file /etc/syslog-ng/syslog-ng.conf --remove f_cron --append "destination df_cron { file(\"/var/log/cron.log\"); };/
+  filter f_cron {facility(cron); };"
 
 ==Installation
 
+  gem install davidrichards-appender
+  
 === Dependencies
 
+  * logrotate
+  
 ==COPYRIGHT
 
 Copyright (c) 2009 David Richards. See LICENSE for details.
