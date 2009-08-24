@@ -12,22 +12,13 @@ The workflow is very basic:
 
 This doesn't mean the file looks pretty when we're finished.  
 
-When possible, a fully-owned configuration file makes more sense.  I.e., let Sprinkle, Puppet, Chef, whatever fully own a configuration file and make the changes in the configuration management tool, rather than appending the file.  This approach can easily break if:
+When possible, a fully-owned configuration file makes more sense.  I.e., let Sprinkle, Puppet, Chef, whatever fully own a configuration file and make the changes in the configuration management tool, rather than appending the file.  
 
-* You get your search and replace wrong
-* The configuration file is context sensitive (which is often true)
+This appender approach can easily break if:
 
-Another way to do this is simply with bash:
+  * You get your search and replace wrong
+  * The configuration file is context sensitive (which is often true)
 
-  echo "key value" > j2; echo "other value" >> j2; cat j2 | grep -v other > j2.tmp; echo "new value" >> j2.tmp; mv j2.tmp j2
-  
-The problem with this approach (sometimes) is:
-
-* limited regular expression support
-* less error control
-* manual config history managment
-
-Yet, I prefer the simpler bash approach except for really important config files that I have to touch.
   
 ==Usage
 
@@ -41,8 +32,20 @@ From Ruby:
 
 From the command line:
 
-  appender --file /etc/syslog-ng/syslog-ng.conf --remove f_cron --append "destination df_cron { file(\"/var/log/cron.log\"); };/
-  filter f_cron {facility(cron); };"
+  appender --file /etc/syslog-ng/syslog-ng.conf --remove "destination df_cron" --append "destination df_cron { file(\"/var/log/cron.log\"); };"
+  appender --file /etc/syslog-ng/syslog-ng.conf --remove "filter f_cron" --append "filter f_cron {facility(cron); };"
+
+Another way to do this is simply with bash:
+
+  echo "key value" > j2; echo "other value" >> j2; cat j2 | grep -v other > j2.tmp; echo "new value" >> j2.tmp; mv j2.tmp j2
+
+The problem with this bash approach is:
+
+  * limited regular expression support
+  * less error control
+  * manual configuration history management
+
+Yet, I prefer the simpler bash approach when I can do it that way.
 
 ==Installation
 
