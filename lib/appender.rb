@@ -58,7 +58,7 @@ class Appender
         :date_time_ext => true,
         :directory => self.output_directory,
         :date_time_format => '%F_%T',
-        :count => 25
+        :count => 5
       }
     end
     

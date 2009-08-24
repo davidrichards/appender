@@ -71,6 +71,24 @@ describe "Appender" do
     read_contents.should eql(clean_expectation)
   end
   
+  it "should log rotate the file, keep 5 versions of the configuration file in the directory" do
+    STDOUT.sync = true
+    puts "\n\n******************************\nRunning a 7-second spec\n******************************\n\n"
+    7.times do 
+      Appender.process(:config_file => @config_file)
+      sleep 1 # Ensure a new timestamp
+    end
+    ls = `ls #{File.dirname(@config_file)}/#{File.split(@config_file).last}.*`.split("\n")
+    ls.size.should eql(5)
+  end
+  
+  it "should not break the original configuration file if it cannot be log rotated" do
+    def LogRotate.rotate_file(*args); raise(StandardError, "Testing rotate_file"); end
+    lambda{Appender.process(:config_file => @config_file, :append => "New contents")}.should 
+      raise_error(StandardError, "Testing rotate_file")
+    File.read(@config_file).should eql(contents)
+  end
+
   after(:all) do
     `rm -rf /tmp/appender_spec.conf*`
   end
